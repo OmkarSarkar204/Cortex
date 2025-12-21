@@ -1,7 +1,8 @@
 import os
 import sys
 import numpy as np
-import pandas as pd
+import tkinter as tk
+from collections import deque
 
 WEBOTS_HOME = r"D:\Webots"
 if not os.path.exists(WEBOTS_HOME):
@@ -28,6 +29,70 @@ synaptic_weights = np.load("snn_weights.npy")
 norm_factors = np.load("snn_normalization.npy")
 
 print(f"Loaded Weights: {synaptic_weights}")
+
+class BlackBoxGUI:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("CORTEX BLACK BOX")
+        self.root.geometry("400x300")
+        self.root.configure(bg="black")
+        self.root.attributes('-topmost', True)
+
+        self.lbl_status = tk.Label(self.root, text="SYSTEM INITIALIZING", font=("Consolas", 20, "bold"), bg="black", fg="grey")
+        self.lbl_status.pack(pady=10)
+
+        self.metrics_frame = tk.Frame(self.root, bg="black")
+        self.metrics_frame.pack(pady=5)
+        
+        self.lbl_volt = tk.Label(self.metrics_frame, text="VOLTAGE: 0.00", font=("Consolas", 12), bg="black", fg="#00ff00")
+        self.lbl_volt.pack(side="left", padx=10)
+        
+        self.lbl_thresh = tk.Label(self.metrics_frame, text="THRESH: 1.50", font=("Consolas", 12), bg="black", fg="white")
+        self.lbl_thresh.pack(side="left", padx=10)
+
+        self.canvas_height = 150
+        self.canvas_width = 380
+        self.canvas = tk.Canvas(self.root, width=self.canvas_width, height=self.canvas_height, bg="#111111", highlightthickness=1, highlightbackground="grey")
+        self.canvas.pack(pady=10)
+
+        self.thresh_y = self.map_value(1.5)
+        self.canvas.create_line(0, self.thresh_y, self.canvas_width, self.thresh_y, fill="red", dash=(4, 4))
+        self.canvas.create_text(30, self.thresh_y - 10, text="CRASH LIMIT", fill="red", font=("Arial", 8))
+
+        self.data_len = 100
+        self.voltage_data = deque([0.0]*self.data_len, maxlen=self.data_len)
+
+    def map_value(self, v):
+        v_display = max(0.0, v)
+        y = self.canvas_height - (v_display * (self.canvas_height / 2.0))
+        return y
+
+    def update(self, voltage, emergency_mode):
+        if emergency_mode:
+            self.lbl_status.config(text="EMERGENCY LANDING", fg="red")
+            self.lbl_volt.config(fg="red")
+        else:
+            self.lbl_status.config(text="CORTEX SAFE", fg="#00ff00")
+            self.lbl_volt.config(fg="#00ff00")
+
+        self.lbl_volt.config(text=f"VOLTAGE: {voltage:.2f}")
+
+        self.voltage_data.append(voltage)
+        self.canvas.delete("wave")
+
+        points = []
+        x_gap = self.canvas_width / (self.data_len - 1)
+        
+        for i, val in enumerate(self.voltage_data):
+            x = i * x_gap
+            y = self.map_value(val)
+            points.append(x)
+            points.append(y)
+        
+        if len(points) >= 4:
+            self.canvas.create_line(points, fill="#00ff00", width=2, tags="wave", smooth=True)
+
+        self.root.update()
 
 class IntelligentDrone:
     def __init__(self):
@@ -56,6 +121,8 @@ class IntelligentDrone:
         
         self.v_mem = 0.0
         self.spike_buffer = 0
+
+        self.gui = BlackBoxGUI()
 
     def clamp(self, value, low, high):
         return max(low, min(high, value))
@@ -114,7 +181,7 @@ class IntelligentDrone:
                 
                 input_current = excitation - inhibition
                 
-                self.v_mem = (self.v_mem * 0.8) + input_current ##LIF
+                self.v_mem = (self.v_mem * 0.8) + input_current
                 
                 if self.v_mem > 1.5:
                     self.spike_buffer += 1
@@ -153,8 +220,7 @@ class IntelligentDrone:
             self.motors[3].setVelocity(m[3])
 
             if int(sim_time*10)%2==0:
-                st = "AUTO" if self.emergency_mode else "MANUAL"
-                print(f"\r[{st}] Danger:{excitation:.2f} | Intent:{inhibition:.2f} | Volts:{self.v_mem:.2f}   ", end="")
+                self.gui.update(self.v_mem, self.emergency_mode)
 
 if __name__ == "__main__":
     IntelligentDrone().run()
