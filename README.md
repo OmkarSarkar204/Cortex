@@ -1,6 +1,6 @@
 # Cortex: Neuromorphic Flight Stabilization System
 
-> **NOTICE:** This repository contains proprietary research and development code. It is intended for academic review and portfolio purposes only. Unauthorized copying, distribution, modification, or commercial use of this software is strictly prohibited.
+> **NOTE:** This repository contains proprietary research and development code. It is intended for academic review and portfolio purposes only. Unauthorized copying, distribution, modification, or commercial use of this software is strictly prohibited.
 
 ## Project Abstract
 Cortex is a bio-inspired flight control system designed to mitigate pilot-induced oscillation and distinguish between intentional maneuvers and mechanical failure. Unlike traditional PID controllers which react linearly to error, Cortex employs a **Spiking Neural Network (SNN)** architecture based on **Predictive Coding** principles.
