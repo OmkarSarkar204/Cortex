@@ -1,7 +1,5 @@
 # Cortex: Neuromorphic Flight Stabilization System
 
-> **Copyright © 2025 Omkar Sarkar. All Rights Reserved.**
->
 > **NOTICE:** This repository contains proprietary research and development code. It is intended for academic review and portfolio purposes only. Unauthorized copying, distribution, modification, or commercial use of this software is strictly prohibited.
 
 ## Project Abstract
