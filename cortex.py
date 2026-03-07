@@ -45,6 +45,7 @@ class SuperStableDrone:
         self.kb.enable(self.timestep)
         
         self.motors = []
+        '''Testing on the way'''
         names = ["front left propeller", "front right propeller", "rear left propeller", "rear right propeller"]
         for name in names:
             m = self.robot.getDevice(name)
