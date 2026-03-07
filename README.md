@@ -7,6 +7,9 @@ Cortex is a bio-inspired flight control system designed to mitigate pilot-induce
 
 The system utilizes a Leaky Integrate-and-Fire (LIF) neuron model to process real-time telemetry. It establishes a dynamic threshold for "Danger" (Excitation) and suppresses this signal using an Efference Copy of the pilot's control inputs (Inhibition). This allows the system to autonomously intervene only when the physical state of the drone deviates significantly from the expected outcome of the pilot's input.
 
+## Test Scheme
+
+
 ## Mathematical Model
 The core decision logic is governed by a dynamical system modeling a biological neuron.
 
