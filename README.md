@@ -9,6 +9,8 @@ The system utilizes a Leaky Integrate-and-Fire (LIF) neuron model to process rea
 
 ## Test Scheme
 
+## Test Verification
+
 
 ## Mathematical Model
 The core decision logic is governed by a dynamical system modeling a biological neuron.
